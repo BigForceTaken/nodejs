@@ -1,8 +1,13 @@
-console.log(require('./modules/a'))
-
-process.argv.forEach(item => {
-    console.log(item)
-})
-
-console.log('dirname: ', __dirname)
-console.log('filename: ', __filename)
+function askServer (){
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            
+            reject();
+            console.log(11232);
+        },2000)
+    })
+}
+(async function() {
+    await askServer();
+    console.log('callback');
+})()
