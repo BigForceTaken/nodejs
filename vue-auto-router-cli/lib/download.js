@@ -7,4 +7,5 @@ module.exports.clone = async (repo,desc) =>{
     const download = promisify(require('download-git-repo'));
     await download(repo, desc);
     process.succeed();
+    console.log('下载完成')
 }
