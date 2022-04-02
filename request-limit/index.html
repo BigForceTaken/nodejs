@@ -1,0 +1,20 @@
+<html>
+  <body>
+    <script src="./request-limit.js"></script>
+    <script>
+      const requestLimit = new RequestLimit(2);
+      (async () => {
+        for (let i=0; i<8; i++) {
+          requestLimit.request(() => {
+              return new Promise(resolve => {
+                  setTimeout(() => {
+                    console.log(i);
+                    resolve()
+                  },2000)
+              })
+          });
+        }
+      })()
+    </script>
+  </body>
+</html>
