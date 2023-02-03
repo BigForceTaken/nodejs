@@ -1,20 +1,26 @@
 const Koa = require('koa');
+const router = require('koa-router')();
+const path = require('path')
+const serve = require('koa-static');
 const app = new Koa();
-
-app.use( async (ctx,next) => {
-    await next()
-    const rt = ctx.response.get('X-Response-Time');
-    console.log(`${ctx.method} ${ctx.url} - ${rt}`);
-}).use( async (ctx,next) => {
-    const start = Date.now();
+// 静态资源托管
+app.use(async (ctx,next) => {
+    let start = Date.now();
     await next();
-    let rt = Date.now() - start;
-    ctx.set('X-Response-Time', `${rt}ms`)
-}).use(async (ctx,next) => {
-    ctx.body = "Hello ";
-    await next();
-}).use(async (ctx) => {
-    ctx.body = ctx.body + " World!"
+    let time = Date.now() - start;
+    console.log(`${ctx.url} 请求 花费 ${time} ms`);
 })
-console.log("env", app.env);
+app.use(serve(path.join(__dirname,'./static')))
+
+router.get('/list',async (ctx,next) => {
+    ctx.body = 'koa list';
+})
+router.get('/json',async (ctx,next) => {
+    ctx.body = {
+        title: 'koa2 json'
+    }
+})
+
+app.use(router.routes())
+
 app.listen(3000)
