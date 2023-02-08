@@ -1,0 +1,20 @@
+{
+  "name": "cli",
+  "version": "1.0.0",
+  "description": "",
+  "bin": {
+    "kkb": "./bin/index.js"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^5.2.0",
+    "clear": "^0.1.0",
+    "commander": "^10.0.0",
+    "figlet": "^1.5.2"
+  }
+}
