@@ -1,9 +1,8 @@
-const {Mongo} = require('./mongo')
-const conf = require('./conf')
-const mongo = new Mongo(conf);
+const mongo = require('./mongo')
+
 mongo.once('connect',async () =>{
   console.log('连接成功')
-  const col = mongo.col('fruits', 'myProject');
+  const col = mongo.col('fruits', 'test');
   await col.deleteMany();
 
   const data = new Array(100).fill().map((v,i) => ({

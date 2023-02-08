@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <!-- import CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <el-row>
+      <el-col :span="6">
+        <el-input v-model="form.keyword">
+          <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
+        </el-input>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-radio-group v-model="form.category" @input="fnChange">
+        <el-radio-button :label="option" v-for="option in options"></el-radio-button>
+      </el-radio-group>
+    </el-row>
+    <el-row>
+        <el-table
+        :data="tableData"
+        style="width: 100%">
+        <el-table-column
+          prop="name"
+          label="name"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="category"
+          label="种类"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="price"
+          label="价格">
+        </el-table-column>
+      </el-table>
+    </el-row>
+    <div>
+      <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="page.page"
+      :page-size="page.pagesize"
+      :total="page.total">
+      </el-pagination>
+    </div>
+  </div>
+</body>
+  <!-- import Vue before Element -->
+  <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: function() {
+        return { 
+          form:{
+            keyword: '',
+            category: ''
+          },
+          options:[],
+          tableData:[],
+          page:{
+            page:1,
+            pagesize:5,
+            total: 0
+          }
+        }
+      },
+      created(){
+        this.getData()
+        this.getCategory();
+      },
+      methods:{
+        search(){
+          this.getData()
+        },
+        async getCategory(){
+          const {data} = await axios.get(`/api/category`)
+          this.options = data.data;
+          // this.form.category = this.options[0]
+        },
+        async getData(){
+          const { data } = await axios.get(`/api/list?page=${this.page.page}&pagesize=${this.page.pagesize}&name=${this.form.keyword}&category=${this.form.category}`)
+          console.log(data)
+          this.tableData = data.data.fruits;
+          this.page.total = data.data.page.total
+        },
+        fnChange(val){
+          console.log(val)
+          this.form.category = val;
+          this.getData()
+        },
+        handleSizeChange(val) {
+          console.log(`每页 ${val} 条`);
+        },
+        handleCurrentChange(val) {
+          console.log(`当前页: ${val}`);
+          this.page.page = val;
+          this.getData()
+        }
+      }
+    })
+  </script>
+</html>

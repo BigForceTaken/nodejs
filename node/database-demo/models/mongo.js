@@ -1,5 +1,6 @@
 const {MongoClient} = require('mongodb');
 const {EventEmitter} = require('events')
+const conf = require('./conf')
 class Mongo {
   constructor(conf){
     this.conf = conf;
@@ -18,6 +19,4 @@ class Mongo {
   }
 }
 
-module.exports = {
-  Mongo
-}
+module.exports = new Mongo(conf)
