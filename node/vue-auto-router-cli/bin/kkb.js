@@ -8,5 +8,10 @@ program.version(require('../package.json').version);
 program.command('init <name>')
   .description('init name')
   .action(log)
-
+program.command('refresh')
+  .description('auto generate router')
+  .action(require('../lib/refresh'))
+program.command("serve")
+  .description("serve routers...")
+  .action(require('../lib/serve.js'));
 program.parse(process.argv);

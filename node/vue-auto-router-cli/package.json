@@ -1,11 +1,14 @@
 {
-  "name": "cli",
+  "name": "vue-auto-router-cli",
   "version": "1.0.0",
   "description": "",
-  "bin": {
-    "kkb": "./bin/index.js"
-  },
   "main": "index.js",
+  "bin": {
+    "kkb": "./bin/kkb.js"
+  },
+  "directories": {
+    "lib": "lib"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,6 +20,7 @@
     "commander": "^10.0.0",
     "download-git-repo": "^1.0.0",
     "figlet": "^1.5.2",
-    "ora": "^5.0.0"
+    "ora": "^5.0.0",
+    "watch": "^1.0.2"
   }
 }
