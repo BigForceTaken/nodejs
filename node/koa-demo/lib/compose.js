@@ -1,4 +1,4 @@
-// 组合函数
+// 基础组合函数
 const compose = (...fns) => (...args) => {
   let first = fns.shift();
   let ret = first(...args)
