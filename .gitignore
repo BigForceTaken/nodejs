@@ -1,3 +1,4 @@
 node/*/node_modules/*
 node/express-demo/node_modules/*
+node/shop/*/node_modules/*
 

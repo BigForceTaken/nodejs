@@ -3,7 +3,7 @@
   // 创建数据库连接
   const sequelize = new Sequelize('test', 'root', '12345', {
     host: 'localhost',
-    dialect:'mysql' /* 选择 'mysql' | 'mariadb' | 'postgres' | 'mssql' 其一 */
+    dialect:'mysql' /*方言： 选择 'mysql' | 'mariadb' | 'postgres' | 'mssql' 其一 */ // 
   });
 
   const Fruit = sequelize.define('Fruit',{
