@@ -21,37 +21,137 @@ app.use(async (ctx, next) => {
   ctx.user = user;
   await next();
 });
-router.get('/', async (ctx, next) => {
-  ctx.body= 'test page'
-})
+router.get("/", async (ctx, next) => {
+  ctx.body = "test page";
+});
 router.get("/admin/products", async (ctx, next) => {
   // const products = await ctx.user.getProducts()
-  console.log('getproducts')
+  console.log("getproducts");
   const products = await Product.findAll();
   ctx.body = { prods: products };
 });
 
-router.post('/admin/product', async ctx => {
-  const body = ctx.request.body
-  const res = await ctx.user.createProduct(body)
-  ctx.body = { success: true }
-})
+router.post("/admin/product", async (ctx) => {
+  const body = ctx.request.body;
+  const res = await ctx.user.createProduct(body);
+  ctx.body = { success: true };
+});
 
-router.delete('/admin/product/:id', async (ctx, next) => {
-  const id = ctx.params.id
+router.delete("/admin/product/:id", async (ctx, next) => {
+  const id = ctx.params.id;
   const res = await Product.destroy({
-      where: {
-          id
-      }
-  })
-  ctx.body = { success: true }
-})
-
-router.post('/cart', async ctx => {
+    where: {
+      id,
+    },
+  });
+  ctx.body = { success: true };
+});
+// 获取购物车
+router.get('/cart', async ctx => {
   const cart = await ctx.user.getCart()
   const products = await cart.getProducts()
   ctx.body = { products }
 })
+// 添加购物车
+router.post("/cart", async (ctx) => {
+  const body = ctx.request.body;
+  console.log("ctx.body", ctx.request.body);
+  const prodId = body.id;
+  let fetchedCart;
+  let newQty = 1;
+
+  // 获取购物车
+  const cart = await ctx.user.getCart();
+  console.log("cart", cart);
+  fetchedCart = cart;
+  const products = await cart.getProducts({
+    where: {
+      id: prodId,
+    },
+  });
+
+  let product;
+  // 判断购物车数量
+  if (products.length > 0) {
+    product = products[0];
+  }
+  if (product) {
+    const oldQty = product.cartItem.quantity;
+    newQty = oldQty + 1;
+    console.log("newQty", newQty);
+  } else {
+    product = await Product.findByPk(prodId);
+  }
+
+  await fetchedCart.addProduct(product, {
+    through: {
+      quantity: newQty,
+    },
+  });
+  ctx.body = { success: true };
+});
+// 删除购物车
+router.delete('/cartItem/:id', async ctx => {
+  const id = ctx.params.id
+  const cart = await ctx.user.getCart()
+  const products = await cart.getProducts({
+      where: { id }
+  })
+  console.log('delete product', products)
+  const product = products[0]
+  await product.cartItem.destroy()
+  ctx.body = { success: true }
+})
+
+router.post('/orders', async ctx => {
+  let fetchedCart;
+  const cart = await ctx.user.getCart();
+  fetchedCart = cart;
+  const products = await cart.getProducts();
+  const order = await ctx.user.createOrder();
+  const result = await order.addProducts(
+      products.map(p => {
+          p.orderItem = {
+              quantity: p.cartItem.quantity
+          };
+          return p;
+      })
+  );
+  // console.log('res', result)
+  await fetchedCart.setProducts(null);
+  ctx.body = { success: true }
+})
+
+router.get('/orders', async ctx => {
+  const orders = await ctx.user.getOrders(
+      {
+          include: [
+              // 简单外联
+              'products'
+              // 复杂外联举例
+              // {
+              //     model: Product,
+              //     as: 'products',
+              //     attributes: [
+              //         'id',
+              //         'title'
+              //     ],
+              //     where: {
+              //         'title': 'A'
+              //     }
+              // }
+          ],
+
+          order: [
+              // ['id', 'DESC']
+              ['createdAt', 'DESC']
+
+          ]
+      })
+      console.log('orders', orders)
+  ctx.body = { orders }
+})
+
 
 app.use(router.routes());
 

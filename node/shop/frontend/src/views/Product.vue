@@ -1,4 +1,5 @@
 <template>
+  <div>
   <el-button @click="dialogFormVisible = true">添加商品</el-button>
   <el-table :data="products" style="width: 100%">
     <el-table-column prop="id" label="ID" width="180" />
@@ -42,11 +43,16 @@
       </el-form>
     <el-button type="primary" @click="addProduct">添加</el-button>
   </el-dialog>
+</div>
 </template>
 <script setup>
-import { ref,reactive , inject } from 'vue';
-import { useRouter } from 'vue-router'
+import { ref,reactive , inject,defineEmits,defineProps, watchEffect,onMounted  } from 'vue';
+// import { useRouter } from 'vue-router'
 
+const emit = defineEmits(['change']);
+const props = defineProps({
+  active: String
+})
 const $axios = inject('$axios')
   const form = reactive ({
     title: '',
@@ -58,6 +64,15 @@ const $axios = inject('$axios')
   let products = ref([]);
 
   let dialogFormVisible = ref(false)
+
+  onMounted(() => {
+    watchEffect(async () => {
+      if(props.active === 'product'){
+        console.log('active:', props.active)
+        getProducts()
+      }
+    })
+  })
 
   const getProducts = async () => {
     const res = await $axios.get("/api/admin/products");
@@ -92,13 +107,15 @@ const $axios = inject('$axios')
     const res = await $axios.delete("/api/admin/product/" + row.id);
     await getProducts();
   }
-    const router = useRouter()
+    // const router = useRouter()
     // 添加购物车
     const addCart = async (row) => {
       const params = { id: row.id };
       const res = await $axios.post("/api/cart", params);
       if (res.data.success) {
-        router.push("/cart");
+        // router.push("/cart");
+        // const { instance } = getCurrentInstance();
+        emit('change','cart')
       }
     }
 
